@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Windows Security Alert</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #c8c8c8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    line-height: 1.5;
+  }
+
+  /* Top bar style */
+  #papapeur-header {
+    background: #aa0000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 22px;
+    padding: 10px 16px;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #550000;
+    text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #550000;
+  }
+
+  /* Main Layout en 2 colonnes */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    padding: 20px 32px;
+    gap: 24px;
+    overflow: hidden;
+  }
+
+  /* Colonne Gauche : Vos Textes et Infos */
+  #info-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #080808;
+    border: 1px solid #333;
+    padding: 20px;
+    font-size: 13px;
+  }
+
+  .info-block {
+    line-height: 1.8;
+    border-bottom: 1px solid #222;
+    padding-bottom: 12px;
+    color: #aaa;
+  }
+  .info-block strong { color: #fff; }
+
+  .warning-block {
+    color: #ff3333;
+    font-weight: bold;
+  }
+  .warning-block p { margin-bottom: 10px; }
+
+  .critical-block {
+    background: #200;
+    border: 1px solid #500;
+    padding: 12px;
+    color: #ff5555;
+    font-weight: bold;
+  }
+  .critical-block p { margin-bottom: 4px; }
+  .critical-block p:last-child { margin-bottom: 0; }
+
+  .contact-block {
+    border: 1px dotted #444;
+    padding: 12px;
+    background: #111;
+    color: #fff;
+  }
+
+  .status-block {
+    color: #ff3333;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-top: auto;
+    animation: pulse 1s infinite alternate;
+  }
+
+  /* Colonne Droite : Visuels de progression + Console */
+  #action-panel {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  #progress-container {
+    border: 1px solid #444;
+    background: #111;
+    padding: 16px;
+  }
+
+  #bar-outer {
+    border: 1px solid #555;
+    height: 24px;
+    background: #000;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  #bar-fill {
+    background: #aa0000;
+    width: 0%;
+    height: 100%;
+    transition: width 0.1s linear;
+  }
+
+  #bar-pct {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  #consol {
+    flex: 1;
+    background: #050505;
+    border: 1px solid #222;
+    padding: 12px;
+    font-size: 13px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+
+  .line-enc { color: #ff5555; }
+  .line-err { color: #ffaa00; }
+  .line-ok  { color: #55ff55; }
+
+  #footer {
+    border-top: 1px solid #333;
+    padding: 12px 32px;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+  }
+
+  /* Animations */
+  @keyframes pulse {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+  }
+  .blink {
+    animation: pulse 0.6s infinite alternate;
+  }
+</style>
+</head>
+<body>
+
+  <div id="papapeur-header">
+    EZ BY EL PAPAPEUR
+  </div>
+
+<div id="main">
+  
+  <div id="info-panel">
+    <div class="info-block">
+      <strong>Hostname :</strong> <span id="dyn-hostname">DESKTOP-LOADING</span><br>
+      <strong>OS :</strong> Windows 11 Pro x64 23H2 Build 22631<br>
+      <strong>Users :</strong> All local users + SYSTEM<br>
+      <strong>IP (local) :</strong> <span id="dyn-ip">192.168.?.?</span><br>
+      <strong>Encryption :</strong> AES-256-CBC + RSA-2048
+    </div>
+
+    <div class="warning-block">
+      <p>All your documents, photos, databases and other important files have been encrypted with military grade encryption AES-256-CBC.</p>
+      <p>There is NO way to recover your files without the decryption key.</p>
+    </div>
+
+    <div class="critical-block">
+      <p class="blink">⚠️ Do NOT shut down your computer.</p>
+      <p class="blink">⚠️ Do NOT attempt to run antivirus software.</p>
+    </div>
+
+    <div class="contact-block">
+      To recover your files, contact: <span style="color:#ff5555; font-weight:bold;">elpapapeur@nowhere.gg</span>
+    </div>
+
+    <div class="status-block">
+      ENCRYPTING — DO NOT INTERRUPT
+    </div>
+  </div>
+
+  <div id="action-panel">
+    <div id="progress-container">
+      <div id="bar-outer">
+        <div id="bar-fill"></div>
+        <div id="bar-pct">0%</div>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span id="file-count">Files encrypted: 0</span>
+        <span>Threads: 16 (AES-256)</span>
+      </div>
+    </div>
+
+    <div id="consol"></div>
+  </div>
+
+</div>
+
+<div id="footer">
+  Do not close this window. Interruption will cause permanent database loss.
+</div>
+
+<audio id="bgm" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// Génération dynamique de l'IP et du Hostname pour faire plus vrai
+document.getElementById('dyn-hostname').textContent = "DESKTOP-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+document.getElementById('dyn-ip').textContent = "192.168." + Math.floor(Math.random() * 254) + "." + Math.floor(Math.random() * 254);
+
+const paths = [
+  "C:/Users/Admin/Documents/",
+  "C:/Users/Admin/Pictures/",
+  "C:/Users/Admin/Desktop/",
+  "C:/Users/Admin/Downloads/",
+  "C:/Users/Admin/AppData/Local/",
+  "D:/Backup/Photos/",
+  "D:/Work/Projects/"
+];
+
+const exts = [".docx", ".pdf", ".jpg", ".png", ".xlsx", ".zip", ".mp4", ".mov", ".key", ".db", ".pst"];
+
+function randomFile() {
+  const p = paths[Math.floor(Math.random() * paths.length)];
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let name = "";
+  for (let i = 0; i < 8; i++) name += chars.charAt(Math.floor(Math.random() * chars.length));
+  const e = exts[Math.floor(Math.random() * exts.length)];
+  return p + name + e;
+}
+
+const consolEl = document.getElementById("consol");
+const fill = document.getElementById("bar-fill");
+const pctEl = document.getElementById("bar-pct");
+const fileCountEl = document.getElementById("file-count");
+
+let fileCount = 0;
+let pct = 0;
+let done = false;
+
+const logInterval = setInterval(() => {
+  if (done) return;
+
+  const file = randomFile();
+  const line = document.createElement("div");
+
+  const r = Math.random();
+  if (r < 0.88) {
+    line.className = "line-enc";
+    line.textContent = "[ENC] " + file;
+    fileCount++;
+    fileCountEl.textContent = "Files encrypted: " + fileCount;
+  } else if (r < 0.94) {
+    line.className = "line-err";
+    line.textContent = "[ERR] Access denied: " + file;
+  } else {
+    line.className = "line-ok";
+    line.textContent = "[SKP] " + file + " (already processed)";
+  }
+
+  consolEl.appendChild(line);
+  while (consolEl.children.length > 40) consolEl.removeChild(consolEl.firstChild);
+  consolEl.scrollTop = consolEl.scrollHeight;
+
+  pct = Math.min(pct + Math.random() * 1.4 + 0.3, 100);
+  fill.style.width = pct + "%";
+  pctEl.textContent = Math.floor(pct) + "%";
+
+  if (pct >= 100) {
+    done = true;
+    clearInterval(logInterval);
+    pctEl.textContent = "100%";
+    document.querySelector('.status-block').textContent = "ENCRYPTION COMPLETE";
+    document.querySelector('.status-block').style.color = "#ff0000";
+  }
+}, 35);
+
+// Lancement audio sur clic
+document.addEventListener('click', function() {
+  const audio = document.getElementById('bgm');
+  if (audio.paused) {
+    audio.play().catch(function(error) {
+      console.log("Lecture bloquée : ", error);
+    });
+  }
+}, { once: true });
+</script>
+
+</body>
+</html>
