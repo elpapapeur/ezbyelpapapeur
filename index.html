@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Windows Security Alert</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #c8c8c8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    line-height: 1.5;
+  }
+
+  /* Top bar style WannaCry */
+  #topbar {
+    background: #aa0000;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 16px;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 32px;\n    gap: 18px;\n    overflow: hidden;\n  }\n\n  #title-block {\n    color: #ff3333;\n    font-size: 22px;\n    font-weight: bold;\n    letter-spacing: 2px;\n    border-bottom: 1px solid #333;\n    padding-bottom: 12px;\n  }\n\n  #progress-container {\n    border: 1px solid #444;\n    background: #111;\n    padding: 16px;\n  }\n\n  #bar-outer {\n    border: 1px solid #555;\n    height: 24px;\n    background: #000;\n    position: relative;\n    margin-bottom: 8px;\n  }\n\n  #bar-fill {\n    background: #aa0000;\n    width: 0%;\n    height: 100%;\n    transition: width 0.1s linear;\n  }\n\n  #bar-pct {\n    position: absolute;\n    right: 8px;\n    top: 2px;\n    font-weight: bold;\n    color: #fff;\n  }\n\n  #consol {\n    flex: 1;\n    background: #050505;\n    border: 1px solid #222;\n    padding: 12px;\n    font-size: 13px;\n    overflow-y: auto;\n    white-space: pre-wrap;\n  }\n\n  .line-enc { color: #ff5555; }\n  .line-err { color: #ffaa00; }\n  .line-ok  { color: #55ff55; }\n\n  #footer {\n    border-top: 1px solid #333;\n    padding: 12px 32px;\n    font-size: 12px;\n    color: #666;\n    text-align: right;\n  }\n</style>\n</head>\n<body>\n\n<div id=\"topbar\">\n  <span>MICROSLOP WINDOWS SECURITY DEFENDER [SYSTEM CRITICAL]</span>\n  <span>PID: 4092</span>\n</div>\n\n<div id=\"main\">\n  <div id=\"title-block\">\n    ⚠️ CRYPTO-LOCKER ACTIVE: ALL FILES TARGETED\n  </div>\n\n  <div id=\"progress-container\">\n    <div id=\"bar-outer\">\n      <div id=\"bar-fill\"></div>\n      <div id=\"bar-pct\">0%</div>\n    </div>\n    <div style=\"display:flex; justify-content:space-between;\">\n      <span id=\"file-count\">Files encrypted: 0</span>\n      <span>Threads: 16 (AES-256)</span>\n    </div>\n  </div>\n\n  <div id=\"consol\"></div>\n</div>\n\n<div id=\"footer\">\n  Do not close this window. Interruption will cause permanent database loss.\n</div>\n\n\n<audio id=\"bgm\" loop>\n  <source src=\"music.mp3\" type=\"audio/mpeg\">\n</audio>\n\n<script>\nconst paths = [\n  \"C:/Users/Admin/Documents/\",\n  \"C:/Users/Admin/Pictures/\",\n  \"C:/Users/Admin/Desktop/\",\n  \"C:/Users/Admin/Downloads/\",\n  \"C:/Users/Admin/AppData/Local/\",\n  \"D:/Backup/Photos/\",\n  \"D:/Work/Projects/\"\n];\n\nconst exts = [\".docx\", \".pdf\", \".jpg\", \".png\", \".xlsx\", \".zip\", \".mp4\", \".mov\", \".key\", \".db\", \".pst\"];\n\nfunction randomFile() {\n  const p = paths[Math.floor(Math.random() * paths.length)];\n  // Generate a random string-like filename\n  const chars = \"abcdefghijklmnopqrstuvwxyz0123456789\";\n  let name = \"\";\n  for (let i = 0; i < 8; i++) name += chars.charAt(Math.floor(Math.random() * chars.length));\n  const e = exts[Math.floor(Math.random() * exts.length)];\n  return p + name + e;\n}\n\nconst consolEl = document.getElementById(\"consol\");\nlet fileCount = 0;\nlet pct = 0;\nconst fill = document.getElementById(\"bar-fill\");\nconst pctEl = document.getElementById(\"bar-pct\");\nconst fileCountEl = document.getElementById(\"file-count\");\n\nlet done = false;\nconst logInterval = setInterval(() => {\n  if (done) return;\n\n  const file = randomFile();\n  const line = document.createElement(\"div\");\n\n  const r = Math.random();\n  if (r < 0.88) {\n    line.className = \"line-enc\";\n    line.textContent = \"[ENC] \" + file;\n    fileCount++;\n    fileCountEl.textContent = \"Files encrypted: \" + fileCount;\n  } else if (r < 0.94) {\n    line.className = \"line-err\";\n    line.textContent = \"[ERR] Access denied: \" + file;\n  } else {\n    line.className = \"line-ok\";\n    line.textContent = \"[SKP] \" + file + \"  (already processed)\";\n  }\n\n  consolEl.appendChild(line);\n  while (consolEl.children.length > 30) consolEl.removeChild(consolEl.firstChild);\n  consolEl.scrollTop = consolEl.scrollHeight;\n\n  pct = Math.min(pct + Math.random() * 1.1 + 0.2, 100);\n  fill.style.width = pct + \"%\";\n  pctEl.textContent = Math.floor(pct) + \"%\";\n\n  if (pct >= 100) {\n    done = true;\n    clearInterval(logInterval);\n  }\n}, 45);\n\n// SCRIPT DE DÉCLENCHEMENT DE LA MUSIQUE AU PREMIER CLIC\ndocument.addEventListener('click', function() {\n  const audio = document.getElementById('bgm');\n  if (audio.paused) {\n    audio.play().catch(function(error) {\n      console.log(\"La lecture audio a été bloquée par le navigateur : \", error);\n    });\n  }\n}, { once: true });\n</script>\n\n</body>\n</html>\n```
+
+### Ce qu'il vous reste à faire sur votre ordinateur :
+
+1. Renommez votre fichier audio `На грани болевого порога.mp3` en **`music.mp3`**.
+2. Créez (ou modifiez) votre fichier `index.html` avec le code complet ci-dessus.
+3. Déposez ces deux fichiers (`index.html` et `music.mp3`) ensemble dans votre dépôt GitHub.
+4. Activez GitHub Pages dans les options (*Settings -> Pages*) de votre dépôt GitHub.
